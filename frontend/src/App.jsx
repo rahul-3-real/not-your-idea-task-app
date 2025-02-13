@@ -5,7 +5,7 @@ import { login, setLoading } from "./store/slices/authSlice";
 import { AuthLayout, DashboardLayout } from "./layouts";
 import FetchUserData from "./utils/FetchUserData";
 import ProtectedRoute from "./utils/ProtectedRoute";
-import { Login, Tasks } from "./pages";
+import { Login, Register, Tasks } from "./pages";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -56,6 +56,7 @@ const App = () => {
           element={isAuthenticated ? <Navigate to="/" /> : <AuthLayout />}
         >
           <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
         </Route>
 
         {/* Protected Routes */}
