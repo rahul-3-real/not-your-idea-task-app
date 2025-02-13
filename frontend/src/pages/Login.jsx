@@ -109,7 +109,7 @@ const Login = () => {
 
           <button
             type="submit"
-            className="px-7 py-3 bg-blue-500 text-gray-950 text-lg font-semibold rounded cursor-pointer"
+            className="px-7 py-2 bg-amber-300 text-gray-950 text-lg font-semibold rounded cursor-pointer"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Submitting" : "Login"}
@@ -117,7 +117,7 @@ const Login = () => {
 
           <p className="mt-5 mb-5">
             Not a member?{" "}
-            <Link to="/register" className="text-blue-500">
+            <Link to="/register" className="text-amber-300">
               Register
             </Link>
           </p>

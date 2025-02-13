@@ -74,9 +74,7 @@ const App = () => {
         {/* Catch-All Route (Redirect to Dashboard if Authenticated) */}
         <Route
           path="*"
-          element={
-            <Navigate to={isAuthenticated ? "/dashboard/tasks" : "/login"} />
-          }
+          element={<Navigate to={isAuthenticated ? "/" : "/login"} />}
         />
       </Routes>
     </Router>
