@@ -6,7 +6,7 @@ const Droppable = ({ id, children }) => {
   return (
     <div
       ref={setNodeRef}
-      className="bg-black border border-solid border-gray-500 p-5 rounded"
+      className="bg-black border border-solid border-gray-500 p-5 rounded h-full"
     >
       {children}
     </div>

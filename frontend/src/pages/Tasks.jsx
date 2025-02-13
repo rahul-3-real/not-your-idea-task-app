@@ -76,25 +76,43 @@ const Tasks = () => {
 
     const sourceId = active.data.current.status;
     const destinationId = over.id;
+
+    const sourceIndex = active.data.current.index;
+    const destinationIndex = over.data.current?.index ?? sourceIndex;
+
     if (!destinationId) return;
 
     if (sourceId === destinationId) {
-      // Reordering within the same column
       const reorderedTasks = arrayMove(
         columns[sourceId],
-        active.data.current.index,
-        over.data.current.index
+        sourceIndex,
+        destinationIndex
       );
 
       setColumns({ ...columns, [sourceId]: reorderedTasks });
+
+      try {
+        await axios.put(
+          `${import.meta.env.VITE_API_BASE_URL}/tasks/${active.id}`,
+          {
+            newStatus: destinationId,
+            newPosition: destinationIndex + 1,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
+      } catch (error) {
+        console.error("Error updating task:", error);
+      }
     } else {
-      // Moving to a different column
       const sourceTasks = [...columns[sourceId]];
       const destTasks = [...columns[destinationId]];
 
-      const movedTask = sourceTasks.splice(active.data.current.index, 1)[0];
+      const movedTask = sourceTasks.splice(sourceIndex, 1)[0];
       movedTask.status = destinationId;
-      destTasks.splice(destinationId, 0, movedTask);
+      destTasks.splice(destinationIndex, 0, movedTask);
 
       setColumns({
         ...columns,
@@ -102,18 +120,15 @@ const Tasks = () => {
         [destinationId]: destTasks,
       });
 
-      // API call to update task status in the database
       try {
         await axios.put(
           `${import.meta.env.VITE_API_BASE_URL}/tasks/${movedTask._id}`,
           {
             newStatus: destinationId,
-            newPosition: Number(over.data.current?.index) + 1 || 1,
+            newPosition: destinationIndex + 1,
           },
           {
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             withCredentials: true,
           }
         );

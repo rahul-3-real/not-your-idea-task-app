@@ -164,9 +164,6 @@ export const taskPositionController = asyncHandler(async (req, res) => {
   const { id } = req.params;
   let { newStatus, newPosition } = req.body;
 
-  console.log("Received newStatus:", newStatus);
-  console.log("Received newPosition:", newPosition);
-
   // * Validate newPosition
   if (newPosition === undefined || newPosition === null || isNaN(newPosition)) {
     throw new ApiError(
