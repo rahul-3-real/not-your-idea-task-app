@@ -3,7 +3,8 @@ import {
   createTaskController,
   taskDeleteController,
   taskDetailController,
-  TaskListController,
+  taskListController,
+  taskPositionController,
   taskUpdateController,
 } from "../controllers/task.controllers.js";
 import {
@@ -15,13 +16,16 @@ import {
 const router = new Router();
 
 router.route("/").post(isAuthenticated, createTaskController);
-router.route("/all").get(isAuthenticated, TaskListController);
+router.route("/all").get(isAuthenticated, taskListController);
 router
   .route("/:id")
   .get(isAuthenticated, isAuthorized("Task"), taskDetailController);
 router
   .route("/:id")
   .patch(isAuthenticated, isAuthorized("Task"), taskUpdateController);
+router
+  .route("/:id")
+  .put(isAuthenticated, isAuthorized("Task"), taskPositionController);
 router
   .route("/:id")
   .delete(isAuthenticated, isAuthorized("Task"), taskDeleteController);

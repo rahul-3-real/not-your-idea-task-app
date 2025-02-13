@@ -133,7 +133,7 @@ export const taskDeleteController = asyncHandler(async (req, res) => {
 });
 
 // Task List Controller
-export const TaskListController = asyncHandler(async (req, res) => {
+export const taskListController = asyncHandler(async (req, res) => {
   /**
    * TODO: Get User from Request
    * TODO: Search tasks
@@ -149,4 +149,70 @@ export const TaskListController = asyncHandler(async (req, res) => {
 
   // * Send Response
   return res.json(new ApiResponse(200, tasks, "Tasks found successfully!"));
+});
+
+// Update Task Position Controller
+export const taskPositionController = asyncHandler(async (req, res) => {
+  /**
+   * TODO: Get Data from Frontend
+   * TODO: Find Task
+   * TODO: Update Task Positions
+   * TODO: Sending Response
+   * **/
+
+  // * Get data from Frontend
+  const { taskId } = req.params;
+  const { newStatus, newPosition } = req.body;
+
+  // * Find the task
+  const task = await Task.findById(taskId);
+  if (!task) {
+    return res.status(404).json({ success: false, message: "Task not found" });
+  }
+  const oldStatus = task.status;
+  const oldPosition = task.position;
+
+  // * If status is changing, adjust the positions in both columns
+  if (oldStatus !== newStatus) {
+    // Remove task from old column & shift positions
+    await Task.updateMany(
+      { status: oldStatus, position: { $gt: oldPosition } },
+      { $inc: { position: -1 } }
+    );
+
+    // Shift positions in new column for insertion
+    await Task.updateMany(
+      { status: newStatus, position: { $gte: newPosition } },
+      { $inc: { position: 1 } }
+    );
+  } else {
+    // Reordering within the same column
+    if (oldPosition < newPosition) {
+      // Moving down → shift tasks up
+      await Task.updateMany(
+        {
+          status: oldStatus,
+          position: { $gt: oldPosition, $lte: newPosition },
+        },
+        { $inc: { position: -1 } }
+      );
+    } else {
+      // Moving up → shift tasks down
+      await Task.updateMany(
+        {
+          status: oldStatus,
+          position: { $gte: newPosition, $lt: oldPosition },
+        },
+        { $inc: { position: 1 } }
+      );
+    }
+  }
+
+  // * Update dragged task position
+  task.status = newStatus;
+  task.position = newPosition;
+  await task.save();
+
+  // * Sending Response
+  return res.json(new ApiResponse(200, task, "Tasks updated successfully!"));
 });
