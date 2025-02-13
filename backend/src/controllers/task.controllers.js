@@ -19,18 +19,24 @@ export const createTaskController = asyncHandler(async (req, res) => {
 
   // * Get data from frontend
   const userId = await req.user._id;
-  const { title, description, status, position, dueDate, priority } = req.body;
+  const { title, description, status, dueDate, priority } = req.body;
 
   // * Validate data
-  notEmptyValidator([title, description, status, position, dueDate, priority]);
+  notEmptyValidator([title, description, status, dueDate, priority]);
   dateExpiredValidator(dueDate, "Due Date");
+
+  const lastTask = await Task.findOne({ userId, status })
+    .sort("-position")
+    .select("position");
+
+  const newPosition = lastTask ? lastTask.position + 1 : 1;
 
   // * Save Data
   const task = await Task.create({
     title,
     description,
     status,
-    position,
+    position: newPosition,
     dueDate,
     priority,
     userId,
