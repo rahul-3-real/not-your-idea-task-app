@@ -4,7 +4,10 @@ const Droppable = ({ id, children }) => {
   const { setNodeRef } = useDroppable({ id });
 
   return (
-    <div ref={setNodeRef} className="column">
+    <div
+      ref={setNodeRef}
+      className="bg-black border border-solid border-gray-500 p-5 rounded"
+    >
       {children}
     </div>
   );

@@ -161,14 +161,26 @@ export const taskPositionController = asyncHandler(async (req, res) => {
    * **/
 
   // * Get data from Frontend
-  const { taskId } = req.params;
-  const { newStatus, newPosition } = req.body;
+  const { id } = req.params;
+  let { newStatus, newPosition } = req.body;
+
+  console.log("Received newStatus:", newStatus);
+  console.log("Received newPosition:", newPosition);
+
+  // * Validate newPosition
+  if (newPosition === undefined || newPosition === null || isNaN(newPosition)) {
+    throw new ApiError(
+      400,
+      "New position is required and must be a valid number"
+    );
+  }
+  newPosition = Number(newPosition);
 
   // * Find the task
-  const task = await Task.findById(taskId);
-  if (!task) {
-    return res.status(404).json({ success: false, message: "Task not found" });
-  }
+  const task = await Task.findById(id);
+
+  if (!task) throw new ApiError(404, "Task not found");
+
   const oldStatus = task.status;
   const oldPosition = task.position;
 

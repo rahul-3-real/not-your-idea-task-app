@@ -15,6 +15,31 @@ const Tasks = () => {
     Done: [],
   });
 
+  // Format Data
+  const formatDate = (date) => {
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    };
+    return new Date(date).toLocaleDateString("en-US", options);
+  };
+
+  // Priority Colors
+  const priorityColor = (priority) => {
+    switch (priority) {
+      case "Low":
+        return "bg-green-500";
+      case "Medium":
+        return "bg-yellow-500";
+      case "High":
+        return "bg-red-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
+
   // Fetch tasks from API
   useEffect(() => {
     const fetchTasks = async () => {
@@ -30,8 +55,6 @@ const Tasks = () => {
         );
 
         const data = response.data.data;
-
-        console.log(data);
 
         const groupedTasks = {
           "To Do": data.filter((task) => task.status === "To Do"),
@@ -52,7 +75,8 @@ const Tasks = () => {
     if (!over) return;
 
     const sourceId = active.data.current.status;
-    const destinationId = over.data.current.status;
+    const destinationId = over.id;
+    if (!destinationId) return;
 
     if (sourceId === destinationId) {
       // Reordering within the same column
@@ -70,7 +94,7 @@ const Tasks = () => {
 
       const movedTask = sourceTasks.splice(active.data.current.index, 1)[0];
       movedTask.status = destinationId;
-      destTasks.splice(over.data.current.index, 0, movedTask);
+      destTasks.splice(destinationId, 0, movedTask);
 
       setColumns({
         ...columns,
@@ -80,9 +104,19 @@ const Tasks = () => {
 
       // API call to update task status in the database
       try {
-        await axios.put(`/api/tasks/${movedTask._id}`, {
-          status: destinationId,
-        });
+        await axios.put(
+          `${import.meta.env.VITE_API_BASE_URL}/tasks/${movedTask._id}`,
+          {
+            newStatus: destinationId,
+            newPosition: Number(over.data.current?.index) + 1 || 1,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        );
       } catch (error) {
         console.error("Error updating task:", error);
       }
@@ -97,7 +131,7 @@ const Tasks = () => {
           <div className="grid grid-cols-3 gap-7">
             {Object.entries(columns).map(([columnId, tasks]) => (
               <Droppable key={columnId} id={columnId}>
-                <h2>{columnId}</h2>
+                <h2 className="text-xl font-mono font-bold mb-7">{columnId}</h2>
                 <SortableContext
                   items={tasks.map((task) => task._id)}
                   strategy={verticalListSortingStrategy}
@@ -108,9 +142,21 @@ const Tasks = () => {
                       id={task._id}
                       data={{ ...task, index }}
                     >
-                      <div className="task">
-                        <p>{task.title}</p>
-                        <small>{task.description}</small>
+                      <div
+                        className="p-5 bg-gray-800 mb-5 cursor-grab"
+                        data-position={task.position}
+                      >
+                        <h6 className="text-lg font-semibold">{task.title}</h6>
+                        <small className="block mb-2">{task.description}</small>
+                        <p className="mb-4">
+                          <i
+                            className={`inline-block mr-3 w-3 h-3 rounded-full ${priorityColor(
+                              task.priority
+                            )}`}
+                          ></i>
+                          <span>{task.priority}</span>
+                        </p>
+                        <b>Due Date: {formatDate(task.dueDate)}</b>
                       </div>
                     </Draggable>
                   ))}
