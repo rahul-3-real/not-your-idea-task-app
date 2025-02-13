@@ -19,10 +19,6 @@ export const emailValidator = (email) => {
 
 // Min Length Validator
 export const minLengthValidator = (input, length, fieldName = "Input") => {
-  console.log("Input", input);
-  console.log("Length", length);
-  console.log("Field Name", fieldName);
-
   if (!input || input.length < length) {
     throw new ApiError(
       400,

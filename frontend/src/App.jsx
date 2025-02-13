@@ -53,13 +53,7 @@ const App = () => {
         {/* Authentication Routes */}
         <Route
           path="/"
-          element={
-            isAuthenticated ? (
-              <Navigate to="/dashboard/tasks" />
-            ) : (
-              <AuthLayout />
-            )
-          }
+          element={isAuthenticated ? <Navigate to="/" /> : <AuthLayout />}
         >
           <Route path="login" element={<Login />} />
         </Route>
