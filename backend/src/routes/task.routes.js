@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   createTaskController,
+  searchTaskController,
   taskDeleteController,
   taskDetailController,
   taskListController,
