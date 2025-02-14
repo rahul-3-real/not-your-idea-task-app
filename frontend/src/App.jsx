@@ -7,7 +7,14 @@ import { hideAlert } from "./store/slices/alertSlice";
 import { AuthLayout, DashboardLayout } from "./layouts";
 import FetchUserData from "./utils/FetchUserData";
 import ProtectedRoute from "./utils/ProtectedRoute";
-import { Login, Register, Tasks, CreateTask } from "./pages";
+import {
+  Login,
+  Register,
+  Tasks,
+  CreateTask,
+  UpdateTask,
+  DetailTask,
+} from "./pages";
 import { Alert } from "./components";
 
 const App = () => {
@@ -88,6 +95,9 @@ const App = () => {
           >
             <Route index element={<Tasks />} />
             <Route path="create" element={<CreateTask />} />
+            <Route path=":id" element={<DetailTask />}>
+              <Route path="update" element={<UpdateTask />} />
+            </Route>
           </Route>
 
           {/* Catch-All Route (Redirect to Dashboard if Authenticated) */}

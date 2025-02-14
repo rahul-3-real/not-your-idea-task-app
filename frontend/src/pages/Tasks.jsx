@@ -1,12 +1,15 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { DndContext, closestCorners } from "@dnd-kit/core";
+import { IoMdEye } from "react-icons/io";
+import { Link } from "react-router";
 import {
   SortableContext,
   verticalListSortingStrategy,
   arrayMove,
 } from "@dnd-kit/sortable";
+
 import { Droppable, Draggable } from "../components";
-import axios from "axios";
 
 const Tasks = () => {
   const [columns, setColumns] = useState({
@@ -152,28 +155,33 @@ const Tasks = () => {
                   strategy={verticalListSortingStrategy}
                 >
                   {tasks.map((task, index) => (
-                    <Draggable
-                      key={task._id}
-                      id={task._id}
-                      data={{ ...task, index }}
-                    >
-                      <div
-                        className="p-5 bg-gray-800 mb-5 cursor-grab"
-                        data-position={task.position}
+                    <div key={task._id} className="relative">
+                      <Link
+                        to={`/${task._id}`}
+                        className="cursor-pointer absolute top-0 right-0 w-6 h-6 z-10 flex items-center justify-center bg-amber-300 text-black"
                       >
-                        <h6 className="text-lg font-semibold">{task.title}</h6>
-                        <small className="block mb-2">{task.description}</small>
-                        <p className="mb-4">
-                          <i
-                            className={`inline-block mr-3 w-3 h-3 rounded-full ${priorityColor(
-                              task.priority
-                            )}`}
-                          ></i>
-                          <span>{task.priority}</span>
-                        </p>
-                        <b>Due Date: {formatDate(task.dueDate)}</b>
-                      </div>
-                    </Draggable>
+                        <IoMdEye />
+                      </Link>
+                      <Draggable id={task._id} data={{ ...task, index }}>
+                        <div className="p-5 bg-gray-800 mb-5 cursor-grab relative">
+                          <h6 className="text-lg font-semibold">
+                            {task.title}
+                          </h6>
+                          <small className="block mb-2">
+                            {task.description}
+                          </small>
+                          <p className="mb-4">
+                            <i
+                              className={`inline-block mr-3 w-3 h-3 rounded-full ${priorityColor(
+                                task.priority
+                              )}`}
+                            ></i>
+                            <span>{task.priority} Priority</span>
+                          </p>
+                          <b>Due Date: {formatDate(task.dueDate)}</b>
+                        </div>
+                      </Draggable>
+                    </div>
                   ))}
                 </SortableContext>
               </Droppable>

@@ -1,8 +1,8 @@
 import { BiBell } from "react-icons/bi";
 import { useSelector } from "react-redux";
+import { Link } from "react-router";
 
 import Logout from "./Logout";
-import { Link } from "react-router";
 
 const Header = () => {
   const { user } = useSelector((state) => state.auth);
