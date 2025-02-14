@@ -43,6 +43,20 @@ const Tasks = () => {
     }
   };
 
+  // Column Color
+  const columnColor = (status) => {
+    switch (status) {
+      case "To Do":
+        return "text-yellow-500";
+      case "In Progress":
+        return "text-blue-500";
+      case "Done":
+        return "text-green-500";
+      default:
+        return "text-gray-500";
+    }
+  };
+
   // Fetch tasks from API
   useEffect(() => {
     const fetchTasks = async () => {
@@ -149,7 +163,13 @@ const Tasks = () => {
           <div className="grid grid-cols-3 gap-7">
             {Object.entries(columns).map(([columnId, tasks]) => (
               <Droppable key={columnId} id={columnId}>
-                <h2 className="text-xl font-mono font-bold mb-7">{columnId}</h2>
+                <h2
+                  className={`text-xl font-mono font-bold mb-7 ${columnColor(
+                    columnId
+                  )}`}
+                >
+                  {columnId}
+                </h2>
                 <SortableContext
                   items={tasks.map((task) => task._id)}
                   strategy={verticalListSortingStrategy}

@@ -52,35 +52,35 @@ const DetailTask = () => {
     }
   };
 
-  const fetchTask = async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/tasks/${id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-
-      setTask(response.data.data);
-      setLoading(false);
-    } catch (error) {
-      setError(error.message);
-      dispatch(
-        showAlert({
-          message: error.message || "Error fetching task!",
-          type: "error",
-        })
-      );
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchTask = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/tasks/${id}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        );
+
+        setTask(response.data.data);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        dispatch(
+          showAlert({
+            message: error.message || "Error fetching task!",
+            type: "error",
+          })
+        );
+        setLoading(false);
+      }
+    };
+
     fetchTask();
-  }, [id]);
+  }, [id, dispatch]);
 
   if (loading) return <p className="text-white text-center">Loading...</p>;
   if (error) return <p className="text-red-500 text-center">{error}</p>;
@@ -99,18 +99,6 @@ const DetailTask = () => {
           <div className="flex justify-between gap-7">
             <div className="flex gap-7">
               <div>
-                <p className="mb-2 text-lg text-white">Priority</p>
-                <div className="bg-gray-700 px-5 py-3 rounded">
-                  <i
-                    className={`inline-block mr-3 w-3 h-3 rounded-full ${priorityColor(
-                      task.priority
-                    )}`}
-                  ></i>
-                  <span>{task.priority}</span>
-                </div>
-              </div>
-
-              <div>
                 <p className="mb-2 text-lg text-white">Status</p>
                 <div className="bg-gray-700 px-5 py-3 rounded">
                   <i
@@ -119,6 +107,18 @@ const DetailTask = () => {
                     )}`}
                   ></i>
                   <span>{task.status}</span>
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-2 text-lg text-white">Priority</p>
+                <div className="bg-gray-700 px-5 py-3 rounded">
+                  <i
+                    className={`inline-block mr-3 w-3 h-3 rounded-full ${priorityColor(
+                      task.priority
+                    )}`}
+                  ></i>
+                  <span>{task.priority}</span>
                 </div>
               </div>
 
@@ -136,9 +136,12 @@ const DetailTask = () => {
               </div>
 
               <div>
-                <button className="text-white px-5 py-3 rounded-full bg-red-500 cursor-pointer">
+                <Link
+                  to={`/${task._id}/delete`}
+                  className="text-white px-5 py-3 rounded-full bg-red-500 cursor-pointer"
+                >
                   Delete
-                </button>
+                </Link>
               </div>
             </div>
           </div>

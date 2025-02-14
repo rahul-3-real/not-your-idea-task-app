@@ -14,6 +14,7 @@ import {
   CreateTask,
   UpdateTask,
   DetailTask,
+  DeleteTask,
 } from "./pages";
 import { Alert } from "./components";
 
@@ -97,6 +98,7 @@ const App = () => {
             <Route path="create" element={<CreateTask />} />
             <Route path=":id" element={<DetailTask />}>
               <Route path="update" element={<UpdateTask />} />
+              <Route path="delete" element={<DeleteTask />} />
             </Route>
           </Route>
 
