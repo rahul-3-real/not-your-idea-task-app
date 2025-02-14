@@ -7,6 +7,7 @@ import {
   dateExpiredValidator,
   notEmptyValidator,
 } from "../utils/validators.js";
+import { getSocketIo } from "../utils/socket.js";
 
 // Create Task Controller
 export const createTaskController = asyncHandler(async (req, res) => {
@@ -45,6 +46,14 @@ export const createTaskController = asyncHandler(async (req, res) => {
   const user = await User.findById(userId);
   user.tasks.push(task._id);
   await user.save();
+
+  // * Emit event to all users
+  const io = getSocketIo();
+  if (io) {
+    io.emit("task_created", task);
+  } else {
+    console.warn("Warning: Socket.io is not initialized, cannot emit event.");
+  }
 
   // * Sending Response
   return res
@@ -102,6 +111,14 @@ export const taskUpdateController = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Task not found");
   }
 
+  // * Emit event to notify users of update
+  const io = getSocketIo();
+  if (io) {
+    io.emit("task_updated", task);
+  } else {
+    console.warn("Warning: Socket.io is not initialized, cannot emit event.");
+  }
+
   // * Send Response
   return res.json(new ApiResponse(200, task, "Task updated successfully!"));
 });
@@ -127,6 +144,14 @@ export const taskDeleteController = asyncHandler(async (req, res) => {
   const user = await User.findById(task.userId);
   user.tasks.pull(taskId);
   await user.save();
+
+  // * Emit event to notify users of task deletion
+  const io = getSocketIo();
+  if (io) {
+    io.emit("task_deleted", { taskId, message: "Task has been deleted" });
+  } else {
+    console.warn("Warning: Socket.io is not initialized, cannot emit event.");
+  }
 
   // * Send Response
   return res.json(new ApiResponse(200, null, "Task deleted successfully!"));
