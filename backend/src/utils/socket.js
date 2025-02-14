@@ -33,7 +33,6 @@ export const emitTaskEvent = (eventName, data) => {
     return;
   }
   ioInstance.emit(eventName, data);
-  console.log(`Event Emitted: ${eventName}`, data);
 };
 
 export const getSocketIo = () => {

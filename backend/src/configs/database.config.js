@@ -5,7 +5,6 @@ const connectDB = async () => {
     const mongoUrl = process.env.MONGO_URL;
     const databaseName = "task-app";
     const connectionUrl = `${mongoUrl}/${databaseName}`;
-    console.log("Connection uri: " + connectionUrl);
     const instance = await mongoose.connect(connectionUrl);
     console.log(`😊 Database connected on HOST :: ${instance.connection.host}`);
     return instance;
