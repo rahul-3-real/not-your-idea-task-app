@@ -29,5 +29,8 @@ router
 router
   .route("/:id")
   .delete(isAuthenticated, isAuthorized("Task"), taskDeleteController);
+router
+  .route("/search")
+  .delete(isAuthenticated, isAuthorized("Task"), searchTaskController);
 
 export default router;

@@ -7,7 +7,7 @@ import {
   dateExpiredValidator,
   notEmptyValidator,
 } from "../utils/validators.js";
-import { getSocketIo } from "../utils/socket.js";
+import { emitTaskEvent } from "../utils/socket.js";
 
 // Create Task Controller
 export const createTaskController = asyncHandler(async (req, res) => {
@@ -48,12 +48,7 @@ export const createTaskController = asyncHandler(async (req, res) => {
   await user.save();
 
   // * Emit event to all users
-  const io = getSocketIo();
-  if (io) {
-    io.emit("task_created", task);
-  } else {
-    console.warn("Warning: Socket.io is not initialized, cannot emit event.");
-  }
+  emitTaskEvent("task_created", task);
 
   // * Sending Response
   return res
@@ -112,12 +107,7 @@ export const taskUpdateController = asyncHandler(async (req, res) => {
   }
 
   // * Emit event to notify users of update
-  const io = getSocketIo();
-  if (io) {
-    io.emit("task_updated", task);
-  } else {
-    console.warn("Warning: Socket.io is not initialized, cannot emit event.");
-  }
+  emitTaskEvent("task_updated", task);
 
   // * Send Response
   return res.json(new ApiResponse(200, task, "Task updated successfully!"));
@@ -146,7 +136,7 @@ export const taskDeleteController = asyncHandler(async (req, res) => {
   await user.save();
 
   // * Emit event to notify users of task deletion
-  getSocketIo().emit("task_deleted", { taskId });
+  emitTaskEvent("task_deleted", { taskId });
 
   // * Send Response
   return res.json(new ApiResponse(200, null, "Task deleted successfully!"));
@@ -242,6 +232,46 @@ export const taskPositionController = asyncHandler(async (req, res) => {
   task.position = newPosition;
   await task.save();
 
+  // * Emit event to notify users of update
+  emitTaskEvent("task_updated", task);
+
   // * Sending Response
   return res.json(new ApiResponse(200, task, "Tasks updated successfully!"));
+});
+
+// Search Task Controller
+export const searchTaskController = asyncHandler(async (req, res) => {
+  /**
+   * TODO: Get params from frontend
+   * TODO: Search Query
+   * TODO: Sending Response
+   * **/
+
+  try {
+    const { title, description } = req.query;
+
+    // * Build search query
+    let query = {};
+
+    if (title) {
+      query.title = { $regex: title, $options: "i" };
+    }
+
+    if (description) {
+      query.description = { $regex: description, $options: "i" };
+    }
+
+    // * Find tasks that match the query
+    const tasks = await Task.find(query);
+
+    if (!tasks.length) {
+      return res.status(404).json(new ApiResponse(404, [], "No tasks found!"));
+    }
+
+    return res.status(200).json(new ApiResponse(200, tasks, "Tasks found!"));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(new ApiResponse(500, null, "Internal server error"));
+  }
 });

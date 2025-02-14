@@ -1,10 +1,10 @@
 import { io } from "socket.io-client";
 
-const SOCKET_SERVER_URL = import.meta.env.VITE_API_BASE_URL;
+const SOCKET_SERVER_URL = import.meta.env.VITE_API_BASE_PATH;
 
 export const socket = io(SOCKET_SERVER_URL, {
   withCredentials: true,
-  transports: ["websocket"],
+  transports: ["websocket", "polling"],
 });
 
 socket.on("connect", () => {
