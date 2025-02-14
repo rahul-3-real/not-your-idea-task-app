@@ -2,7 +2,6 @@ import { Server } from "socket.io";
 
 let ioInstance = null;
 
-// Function to initialize Socket.io
 export const initSocketIo = (server) => {
   ioInstance = new Server(server, {
     cors: {
@@ -12,22 +11,22 @@ export const initSocketIo = (server) => {
   });
 
   ioInstance.on("connection", (socket) => {
-    console.log(`User Connected: ${socket.id}`);
+    console.log(`🔌 User Connected: ${socket.id}`);
 
-    // Handle disconnect
+    // Debug Event Emit
+    socket.emit("test_event", { message: "Hello from server!" });
+
     socket.on("disconnect", () => {
-      console.log(`User Disconnected: ${socket.id}`);
+      console.log(`🔴 User Disconnected: ${socket.id}`);
     });
   });
 
   return ioInstance;
 };
 
-// Function to get the existing Socket.io instance
 export const getSocketIo = () => {
   if (!ioInstance) {
-    console.warn("⚠️ Warning: Socket.io has not been initialized!");
-    return null; // Instead of throwing an error, return null
+    throw new Error("Socket.io has not been initialized!");
   }
   return ioInstance;
 };

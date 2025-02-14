@@ -1,8 +1,8 @@
-import { BiBell } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import { Link } from "react-router";
 
 import Logout from "./Logout";
+import NotificationBell from "./NotificationBell";
 
 const Header = () => {
   const { user } = useSelector((state) => state.auth);
@@ -22,9 +22,8 @@ const Header = () => {
             <Link to="/create" className="text-white">
               Create Task
             </Link>
-            <button className="cursor-pointer text-xl text-white">
-              <BiBell />
-            </button>
+
+            <NotificationBell />
 
             <Logout />
           </nav>

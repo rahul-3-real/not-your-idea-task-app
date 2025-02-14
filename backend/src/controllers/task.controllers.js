@@ -146,12 +146,7 @@ export const taskDeleteController = asyncHandler(async (req, res) => {
   await user.save();
 
   // * Emit event to notify users of task deletion
-  const io = getSocketIo();
-  if (io) {
-    io.emit("task_deleted", { taskId, message: "Task has been deleted" });
-  } else {
-    console.warn("Warning: Socket.io is not initialized, cannot emit event.");
-  }
+  getSocketIo().emit("task_deleted", { taskId });
 
   // * Send Response
   return res.json(new ApiResponse(200, null, "Task deleted successfully!"));
