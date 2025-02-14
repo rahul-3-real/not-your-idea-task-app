@@ -27,19 +27,19 @@ const Alert = () => {
   const alertColors = (alertType) => {
     switch (alertType) {
       case "success":
-        return "green-500";
+        return "border-b-green-500";
       case "error":
-        return "red-500";
+        return "border-b-red-500";
       case "info":
-        return "blue-500";
+        return "border-b-blue-500";
       default:
-        return "gray-500";
+        return "border-b-gray-500";
     }
   };
 
   return (
     <div
-      className={`fixed left-7 bottom-7 bg-gray-700 rounded px-4 py-3 flex border-solid border-b-5 w-[80%] max-w-[300px] border-b-${alertColors(
+      className={`fixed left-7 bottom-7 bg-gray-700 rounded px-4 py-3 flex border-solid border-b-5 w-[80%] max-w-[300px] z-50 ${alertColors(
         type
       )}`}
     >

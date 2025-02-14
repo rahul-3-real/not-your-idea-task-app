@@ -1,15 +1,24 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
+
 import { login, setLoading } from "./store/slices/authSlice";
+import { hideAlert } from "./store/slices/alertSlice";
 import { AuthLayout, DashboardLayout } from "./layouts";
 import FetchUserData from "./utils/FetchUserData";
 import ProtectedRoute from "./utils/ProtectedRoute";
-import { Login, Register, Tasks } from "./pages";
+import { Login, Register, Tasks, CreateTask } from "./pages";
+import { Alert } from "./components";
 
 const App = () => {
   const dispatch = useDispatch();
   const { isAuthenticated, loading } = useSelector((state) => state.auth);
+  const alert = useSelector((state) => state.alert);
+
+  // Close Alert Handler
+  const handleCloseAlert = () => {
+    dispatch(hideAlert());
+  };
 
   useEffect(() => {
     const initializeUser = async () => {
@@ -48,36 +57,47 @@ const App = () => {
   }
 
   return (
-    <Router>
-      <Routes>
-        {/* Authentication Routes */}
-        <Route
-          path="/"
-          element={isAuthenticated ? <Navigate to="/" /> : <AuthLayout />}
-        >
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-        </Route>
-
-        {/* Protected Routes */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <DashboardLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Tasks />} />
-        </Route>
-
-        {/* Catch-All Route (Redirect to Dashboard if Authenticated) */}
-        <Route
-          path="*"
-          element={<Navigate to={isAuthenticated ? "/" : "/login"} />}
+    <>
+      {alert.visible && (
+        <Alert
+          className={`alert-${alert.type}`}
+          message={alert.message}
+          onClose={handleCloseAlert}
         />
-      </Routes>
-    </Router>
+      )}
+
+      <Router>
+        <Routes>
+          {/* Authentication Routes */}
+          <Route
+            path="/"
+            element={isAuthenticated ? <Navigate to="/" /> : <AuthLayout />}
+          >
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+          </Route>
+
+          {/* Protected Routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Tasks />} />
+            <Route path="create" element={<CreateTask />} />
+          </Route>
+
+          {/* Catch-All Route (Redirect to Dashboard if Authenticated) */}
+          <Route
+            path="*"
+            element={<Navigate to={isAuthenticated ? "/" : "/login"} />}
+          />
+        </Routes>
+      </Router>
+    </>
   );
 };
 

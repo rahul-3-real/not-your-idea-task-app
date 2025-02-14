@@ -32,3 +32,29 @@ export const registerSchema = yup.object().shape({
     .oneOf([yup.ref("password")], "Password must match")
     .required("Please confirm your password"),
 });
+
+// Task Schema Validation
+export const taskSchema = yup.object().shape({
+  title: yup
+    .string()
+    .required("Title is required")
+    .min(3, "Title must be at least 3 characters")
+    .max(100, "Title cannot exceed 100 characters"),
+  description: yup
+    .string()
+    .nullable()
+    .max(500, "Description cannot exceed 500 characters"),
+  status: yup
+    .string()
+    .required("Status is required")
+    .oneOf(["To Do", "In Progress", "Done"], "Invalid status selected"),
+  priority: yup
+    .string()
+    .required("Priority is required")
+    .oneOf(["Low", "Medium", "High"], "Invalid priority selected"),
+  dueDate: yup
+    .date()
+    .nullable()
+    .min(new Date(), "Due date cannot be in the past")
+    .required("Due date is required"),
+});
